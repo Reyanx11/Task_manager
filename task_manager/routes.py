@@ -2,6 +2,7 @@ from flask import render_template,flash,redirect,url_for
 from task_manager.forms import RegistrationForm, LoginForm
 from task_manager import db,bcrypt
 from task_manager.models import User
+from flask_login import login_user,logout_user,current_user,login_required
 
 
 
@@ -15,8 +16,10 @@ def register_routes(app):
     def login():
         form = LoginForm()
         if form.validate_on_submit():
-            user = User.query.filter_by(email = form.email.data).first()
+            user = User.query.filter_by(email = form.email.data).first() #filters username by using email
+            #checking email and pass
             if user and bcrypt.check_password_hash(user.password, form.password.data):
+                login_user(user, remember=form.remember.data)   
                 flash(f'Login Successful', 'success')
                 return redirect(url_for('home'))
             else:
@@ -32,6 +35,6 @@ def register_routes(app):
             user = User(username = form.username.data, email = form.email.data, password = hashed_password)
             db.session.add(user)
             db.session.commit()
-            flash (f'Account created for {form.username.data}', 'success')
-            return redirect(url_for('home'))
+            flash (f'Account created for {form.username.data} now you can login', 'success')
+            return redirect(url_for('login'))  #redirects to login page so user can log in after they register themselves
         return render_template('register.html',title = 'Register', form=form)
