@@ -1,5 +1,5 @@
-from flask import render_template,flash,redirect,url_for
-from task_manager.forms import RegistrationForm, LoginForm
+from flask import render_template,flash,redirect,url_for,request
+from task_manager.forms import RegistrationForm, LoginForm,EditProfile
 from task_manager import db,bcrypt
 from task_manager.models import User
 from flask_login import login_user,logout_user,current_user,login_required
@@ -38,3 +38,31 @@ def register_routes(app):
             flash (f'Account created for {form.username.data} now you can login', 'success')
             return redirect(url_for('login'))  #redirects to login page so user can log in after they register themselves
         return render_template('register.html',title = 'Register', form=form)
+
+#Logout route   
+    @app.route('/logout')
+    @login_required
+    def logout():
+        logout_user() 
+        flash('You have been logged out successfully', 'info')
+        return redirect(url_for('home'))
+    
+#edit profile
+    @app.route('/edit_profile', methods=['POST','GET'])
+    @login_required
+    def edit_profile():
+        form = EditProfile()
+
+        if form.validate_on_submit():
+
+            current_user.username = form.username.data
+            current_user.email = form.email.data
+            db.session.commit()
+
+            flash('your account has been updated','success')
+            return  redirect(url_for('home'))
+        elif request.method == 'GET':
+            form.username.data = current_user.username
+            form.email.data = current_user.email
+
+        return render_template('profile.html', title = 'Edit Profile',form = form)
