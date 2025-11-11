@@ -26,10 +26,6 @@
                         <li class="nav-item">
                             <a class="nav-link active" aria-current="page" href="{{url_for('home')}}">Home</a>
                         </li>
-                        <form class="d-flex" role="search">
-                            <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-                            <button class="btn btn-outline-primary" type="submit">Search</button>
-                        </form>
                     </ul>
                 </div>
 
@@ -37,6 +33,7 @@
                 <div class="navbar-nav me-4">
                     {% if current_user.is_authenticated %}
                         <!-- Button for right off canvas-->
+                        <a href="{{url_for('tasks')}}" class="nav-item nav-link">Tasks</a>
                         <button class="btn bg-transparent" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasRight" aria-controls="offcanvasRight">
                             <i class="bi bi-person-circle fs-5"></i>
                         </button>

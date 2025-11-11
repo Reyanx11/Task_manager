@@ -1,7 +1,7 @@
 from flask import render_template,flash,redirect,url_for,request
-from task_manager.forms import RegistrationForm, LoginForm,EditProfile
+from task_manager.forms import RegistrationForm, LoginForm,EditProfile, TaskForm
 from task_manager import db,bcrypt
-from task_manager.models import User
+from task_manager.models import User, Task
 from flask_login import login_user,logout_user,current_user,login_required
 
 
@@ -66,3 +66,21 @@ def register_routes(app):
             form.email.data = current_user.email
 
         return render_template('profile.html', title = 'Edit Profile',form = form)
+    
+#Task route
+    @app.route('/tasks', methods=['POST','GET'])
+    @login_required
+    def tasks():
+        form = TaskForm()
+
+        if form.validate_on_submit():
+            task = Task(
+                title = form.title.data,
+                owner = current_user
+            )
+            db.session.add(task)
+            db.session.commit()
+            return redirect(url_for('tasks'))
+        
+        user_tasks = Task.query.filter_by(user_id = current_user.id).order_by(Task.date_created.desc()).all()
+        return render_template('tasks.html', form=form, title = 'task',tasks=user_tasks)

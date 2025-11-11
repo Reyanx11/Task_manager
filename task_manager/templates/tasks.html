@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="text-end mt-4 me-5">
+        <a href="#taskform" class="btn btn-success" data-bs-toggle="collapse" role="button" 
+            aria-expanded="false" aria-controls="taskform">
+            Add Tasks
+        </a>
+    </div>
+
+    <div class="collapse" id="taskform">
+        <div class="d-flex justify-content-center">
+            <div class="card p-4 " style="width: 30rem;">
+                <form method="POST" >
+                    {{ form.hidden_tag() }}
+                    
+                        <div class="mb-3">
+                            {{ form.title.label(class="form-label") }}
+                            {{ form.title(class="form-control") }}
+                        </div>
+
+                    {{ form.submit(class="btn btn-primary w-100") }}
+                </form>
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="container mt-4">
+        
+        {% for task in tasks %}
+            <div class="card mb-3 p-3 {% if task.is_complete %}bg-success-subtle{% endif %}">
+                <h5>{{ task.title }}</h5>
+                <small class="text-muted">Created on {{ task.date_created.strftime('%Y-%m-%d') }}</small>
+            </div>
+            {% else %}
+            <p>No tasks yet. Add one above.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

@@ -50,3 +50,7 @@ class EditProfile(FlaskForm):
             user = User.query.filter_by(email = email.data).first()
             if user:
                 raise ValidationError('An account with that email already exists')
+            
+class TaskForm(FlaskForm):
+    title = StringField('title', validators=[(DataRequired()), length(max=100)])
+    submit = SubmitField('Add Task')
