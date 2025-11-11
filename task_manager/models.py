@@ -14,4 +14,5 @@ class Task(db.Model):
     title = db.Column(db.String(50), nullable = False)
     date_created = db.Column(db.DateTime, default = datetime.utcnow)
     is_completed = db.Column(db.Boolean, default = False)
+    deadline = db.Column(db.DateTime, nullable = True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'),nullable = False)

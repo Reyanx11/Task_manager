@@ -76,6 +76,7 @@ def register_routes(app):
         if form.validate_on_submit():
             task = Task(
                 title = form.title.data,
+                deadline = form.deadline.data,
                 owner = current_user
             )
             db.session.add(task)
@@ -84,3 +85,22 @@ def register_routes(app):
         
         user_tasks = Task.query.filter_by(user_id = current_user.id).order_by(Task.date_created.desc()).all()
         return render_template('tasks.html', form=form, title = 'task',tasks=user_tasks)
+
+#updating task
+    @app.route('/update_task/<int:task_id>/<string:action>', methods=['POST'])
+    @login_required
+    def update_task(task_id,action):
+        task = Task.query.get_or_404(task_id)
+        if task.owner != current_user:
+            flash("You are not allowed to modify this task.", "danger")
+            return redirect(url_for('tasks'))
+    #actions for buttons    
+        if action == 'complete':
+            task.is_completed = True
+        elif action == 'undo':
+            task.is_completed = False
+        if action == 'delete':
+            db.session.delete(task)
+        
+        db.session.commit()
+        return redirect(url_for('tasks'))
