@@ -16,3 +16,9 @@ class Task(db.Model):
     is_completed = db.Column(db.Boolean, default = False)
     deadline = db.Column(db.DateTime, nullable = True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'),nullable = False)
+
+class DailyTask(db.Model):
+    id = db.Column(db.Integer, primary_key = True)
+    title = db.Column(db.String(50), nullable = False)
+    is_completed = db.Column(db.Boolean, default = False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'),nullable = False)

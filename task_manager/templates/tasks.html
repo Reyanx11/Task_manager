@@ -31,39 +31,75 @@
     </div>
     
 <!--tasks-->
-    <div class="container mt-4" style="width: 60%; margin-left:5%;">
-        {% for task in tasks %}
-            <!--card layout-->
-            <div class="card mb-3 p-3 d-flex flex-row justify-content-between align-items-center {% if task.is_completed %}bg-success-subtle{% endif %}">
-                <div >
-                    <h5 >{{ task.title }}</h5>
-                    <p><strong>Due:</strong> {{task.deadline.strftime('%d-%m-%y') if task.deadline else ''}}</p>
-                    <small class="text-muted">Created on {{ task.date_created.strftime('%d-%m-%Y') }}</small>
-                </div>
-                <!-- updation buttons -->
-                <div>    
-                    <form action="{{ url_for('update_task', task_id=task.id, action = 'edit')}}" method="POST">
-                            <button class="btn btn-secondary btn-sm rounded-pill mb-2" type="submit">
-                                <i class="bi bi-pen-fill"></i>Edit
-                            </button>
-                    </form>
-                    {% if not task.is_completed %}
-                        <form action="{{ url_for('update_task', task_id=task.id, action = 'complete')}}" method="POST">
-                            <button class="btn btn-success btn-sm rounded-pill" type="submit">Completed</button>
+    <div class="d-flex">
+        <div class="container mt-4" style="width: 60%; margin-left:5%;">
+            {% for task in tasks %}
+                <!--card layout-->
+                <div class="card mb-3 p-3 d-flex flex-row justify-content-between align-items-center {% if task.is_completed %}bg-success-subtle{% endif %}">
+                    <div >
+                        <h5 >{{ task.title }}</h5>
+                        <p><strong>Due:</strong> {{task.deadline.strftime('%d-%m-%y') if task.deadline else ''}}</p>
+                        <small class="text-muted">Created on {{ task.date_created.strftime('%d-%m-%Y') }}</small>
+                    </div>
+                    <!-- updation buttons -->
+                    <div>    
+                        <form action="{{ url_for('update_task', task_id=task.id, action = 'edit')}}" method="POST">
+                                <button class="btn btn-secondary btn-sm rounded-pill mb-2" type="submit">
+                                    <i class="bi bi-pen-fill"></i>Edit
+                                </button>
                         </form>
-                    {% else %}
-                        <form action="{{ url_for('update_task', task_id=task.id, action = 'undo')}}" method="POST">
-                            <button class="btn btn-primary btn-sm rounded-pill" type="submit">Undo</button>
-                        </form>
-                    {% endif %}
-                        <form action="{{ url_for('update_task', task_id = task.id, action ='delete')}}" method="POST">
-                            <button class="btn btn-danger btn-sm rounded-pill mt-2" type="submit">Delete</button>
-                        </form>  
+                        {% if not task.is_completed %}
+                            <form action="{{ url_for('update_task', task_id=task.id, action = 'complete')}}" method="POST">
+                                <button class="btn btn-success btn-sm rounded-pill" type="submit">Completed</button>
+                            </form>
+                        {% else %}
+                            <form action="{{ url_for('update_task', task_id=task.id, action = 'undo')}}" method="POST">
+                                <button class="btn btn-primary btn-sm rounded-pill" type="submit">Undo</button>
+                            </form>
+                        {% endif %}
+                            <form action="{{ url_for('update_task', task_id = task.id, action ='delete')}}" method="POST">
+                                <button class="btn btn-danger btn-sm rounded-pill mt-2" type="submit">Delete</button>
+                            </form>  
+                    </div>
                 </div>
-            </div>
-        {% else %}
-            <p>No tasks yet. Add one above.</p>
-        {% endfor %}
+            {% else %}
+                <p>No tasks yet. Add one above.</p>
+            {% endfor %}
+        </div>
+
+        <div class="card mb-3 p-3 mt-5" style="width: 20%; margin-right: 5%;">
+            <h2>Daily Tasks</h2>
+    
+            <!-- Add new task -->
+            <form action="{{ url_for('add_daily_task') }}" method="POST" class="mb-3">
+                <div class="input-group">
+                    <input type="text" name="title" class="form-control" placeholder="Add new daily task">
+                    <button class="btn btn-primary" type="submit">Add</button>
+                </div>
+            </form>
+
+            <!-- List of daily tasks -->
+            <ul class="list-group list-group-flush">
+                {% for task in daily_tasks %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <form action="{{ url_for('update_daily_task', task_id=task.id, action='complete' if not task.is_completed else 'undo') }}" method="POST">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="completed" onChange="this.form.submit()" {% if task.is_completed %}checked{% endif %}>
+                                <label class="form-check-label">{{ task.title }}</label>
+                            </div>
+                        </form>
+
+                        <!-- Delete button -->
+                        <form action="{{ url_for('update_daily_task', task_id=task.id, action='delete') }}" method="POST">
+                            <button class="btn btn-danger btn-sm rounded-pill">Delete</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+
     </div>
+
 
 {% endblock %}

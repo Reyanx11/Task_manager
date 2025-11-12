@@ -1,7 +1,7 @@
 from flask import render_template,flash,redirect,url_for,request
-from task_manager.forms import RegistrationForm, LoginForm,EditProfile, TaskForm
+from task_manager.forms import RegistrationForm, LoginForm,EditProfile, TaskForm,DailyTaskForm
 from task_manager import db,bcrypt
-from task_manager.models import User, Task
+from task_manager.models import User, Task,DailyTask
 from flask_login import login_user,logout_user,current_user,login_required
 
 
@@ -84,7 +84,8 @@ def register_routes(app):
             return redirect(url_for('tasks'))
         
         user_tasks = Task.query.filter_by(user_id = current_user.id).order_by(Task.date_created.desc()).all()
-        return render_template('tasks.html', form=form, title = 'task',tasks=user_tasks)
+        daily_tasks = DailyTask.query.filter_by(user_id=current_user.id).order_by(DailyTask.id.desc()).all()
+        return render_template('tasks.html', form=form, title = 'task',tasks=user_tasks, daily_tasks=daily_tasks)
 
 #updating task
     @app.route('/update_task/<int:task_id>/<string:action>', methods=['POST'])
@@ -118,4 +119,35 @@ def register_routes(app):
         db.session.commit()
         return redirect(url_for('tasks'))
         
-        
+
+    @app.route('/daily_task/add', methods=['POST'])
+    @login_required
+    def add_daily_task():
+        title = request.form.get('title')
+        if not title:
+            flash("Task title cannot be empty", "danger")
+            return redirect(url_for('tasks'))
+
+        new_task = DailyTask(title=title, user_id=current_user.id)
+
+        db.session.add(new_task)
+        db.session.commit()
+        return redirect(url_for('tasks'))
+
+    @app.route('/update_daily_task/<int:task_id>/<string:action>', methods=['POST'])
+    @login_required
+    def update_daily_task(task_id, action):
+        task = DailyTask.query.get_or_404(task_id)
+        if task.user_id != current_user.id:
+            flash("You are not allowed to modify this task.", "danger")
+            return redirect(url_for('tasks'))
+
+        if action == 'complete':
+            task.is_completed = True
+        elif action == 'undo':
+            task.is_completed = False
+        elif action == 'delete':
+            db.session.delete(task)
+
+        db.session.commit()
+        return redirect(url_for('tasks'))

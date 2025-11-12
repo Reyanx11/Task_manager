@@ -57,3 +57,7 @@ class TaskForm(FlaskForm):
     title = StringField('title', validators=[(DataRequired()), length(max=100)])
     deadline = DateField('deadline', format='%Y-%m-%d', validators=[Optional()])
     submit = SubmitField('Add Task')
+
+class DailyTaskForm(FlaskForm):
+    title = StringField('title', validators=[(DataRequired()), length(max=100)])
+    submit = SubmitField('Add Task')
