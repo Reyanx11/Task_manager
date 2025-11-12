@@ -94,13 +94,28 @@ def register_routes(app):
         if task.owner != current_user:
             flash("You are not allowed to modify this task.", "danger")
             return redirect(url_for('tasks'))
+#edit tasks       
+        if action == 'edit':
+            form = TaskForm(obj = task)
+            if form.validate_on_submit():
+                task.title = form.title.data
+                task.deadline = form.deadline.data
+                flash('Task updated', 'success')
+                db.session.commit()
+                return redirect(url_for('tasks'))
+            return render_template('edit_task.html', form=form, task = task)
+
     #actions for buttons    
         if action == 'complete':
             task.is_completed = True
+        
         elif action == 'undo':
             task.is_completed = False
-        if action == 'delete':
+    
+        elif action == 'delete':
             db.session.delete(task)
         
         db.session.commit()
         return redirect(url_for('tasks'))
+        
+        

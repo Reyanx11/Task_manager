@@ -31,34 +31,39 @@
     </div>
     
 <!--tasks-->
-        <div class="container mt-4" style="width: 60%; margin-left:5%;">
-            {% for task in tasks %}
-                <!--card layout-->
-                <div class="card mb-3 p-3 d-flex flex-row justify-content-between align-items-center {% if task.is_completed %}bg-success-subtle{% endif %}">
-                    <div >
-                        <h5 >{{ task.title }}</h5>
-                        <p><strong>Due:</strong> {{task.deadline.strftime('%d-%m-%y') if task.deadline else ''}}</p>
-                        <small class="text-muted">Created on {{ task.date_created.strftime('%d-%m-%Y') }}</small>
-                    </div>
-                    <!-- updation buttons -->
-                    <div>    
-                        {% if not task.is_completed %}
-                            <form action="{{ url_for('update_task', task_id=task.id, action = 'complete')}}" method="POST">
-                                <button class="btn btn-success btn-sm rounded-pill" type="submit">Completed</button>
-                            </form>
-                        {% else %}
-                            <form action="{{ url_for('update_task', task_id=task.id, action = 'undo')}}" method="POST">
-                                <button class="btn btn-primary btn-sm rounded-pill" type="submit">Undo</button>
-                            </form>
-                        {% endif %}
-                            <form action="{{ url_for('update_task', task_id = task.id, action ='delete')}}" method="POST">
-                                <button class="btn btn-danger btn-sm rounded-pill mt-2" type="submit">Delete</button>
-                            </form>  
-                    </div>
+    <div class="container mt-4" style="width: 60%; margin-left:5%;">
+        {% for task in tasks %}
+            <!--card layout-->
+            <div class="card mb-3 p-3 d-flex flex-row justify-content-between align-items-center {% if task.is_completed %}bg-success-subtle{% endif %}">
+                <div >
+                    <h5 >{{ task.title }}</h5>
+                    <p><strong>Due:</strong> {{task.deadline.strftime('%d-%m-%y') if task.deadline else ''}}</p>
+                    <small class="text-muted">Created on {{ task.date_created.strftime('%d-%m-%Y') }}</small>
                 </div>
-            {% else %}
-                <p>No tasks yet. Add one above.</p>
-            {% endfor %}
-        </div>
+                <!-- updation buttons -->
+                <div>    
+                    <form action="{{ url_for('update_task', task_id=task.id, action = 'edit')}}" method="POST">
+                            <button class="btn btn-secondary btn-sm rounded-pill mb-2" type="submit">
+                                <i class="bi bi-pen-fill"></i>Edit
+                            </button>
+                    </form>
+                    {% if not task.is_completed %}
+                        <form action="{{ url_for('update_task', task_id=task.id, action = 'complete')}}" method="POST">
+                            <button class="btn btn-success btn-sm rounded-pill" type="submit">Completed</button>
+                        </form>
+                    {% else %}
+                        <form action="{{ url_for('update_task', task_id=task.id, action = 'undo')}}" method="POST">
+                            <button class="btn btn-primary btn-sm rounded-pill" type="submit">Undo</button>
+                        </form>
+                    {% endif %}
+                        <form action="{{ url_for('update_task', task_id = task.id, action ='delete')}}" method="POST">
+                            <button class="btn btn-danger btn-sm rounded-pill mt-2" type="submit">Delete</button>
+                        </form>  
+                </div>
+            </div>
+        {% else %}
+            <p>No tasks yet. Add one above.</p>
+        {% endfor %}
+    </div>
 
 {% endblock %}
